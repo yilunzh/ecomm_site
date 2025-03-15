@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import type { DefaultSession, NextAuthConfig } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -6,10 +8,26 @@ import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import { compare } from "bcrypt";
 
+// Extend the built-in session types
+type UserRole = "ADMIN" | "CUSTOMER";
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+      role: UserRole;
+    } & DefaultSession["user"]
+  }
+
+  interface User {
+    role: UserRole;
+  }
+}
+
 const prisma = new PrismaClient();
 
-const handler = NextAuth({
-  adapter: PrismaAdapter(prisma),
+export const authOptions: NextAuthConfig = {
+  adapter: PrismaAdapter(prisma) as any, // Type assertion needed due to adapter version mismatch
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
@@ -17,7 +35,7 @@ const handler = NextAuth({
     verifyRequest: "/auth/verify-request",
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   providers: [
     CredentialsProvider({
@@ -33,7 +51,7 @@ const handler = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email,
+            email: credentials.email as string,
           },
         });
 
@@ -42,7 +60,7 @@ const handler = NextAuth({
         }
 
         const isPasswordValid = await compare(
-          credentials.password,
+          credentials.password as string,
           user.hashedPassword
         );
 
@@ -54,7 +72,7 @@ const handler = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          role: user.role as UserRole,
         };
       },
     }),
@@ -75,26 +93,23 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: DefaultSession; token: JWT }) {
       if (token && session.user) {
         session.user.id = token.sub || "";
-        session.user.role = token.role as string || "CUSTOMER";
+        session.user.role = (token.role as UserRole) || "CUSTOMER";
       }
       return session;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
         token.role = user.role;
       }
-      
-      // If it's a Google sign-in and a new user
-      if (account && account.provider === "google" && user) {
-        // We could do additional setup here if needed
-      }
-      
       return token;
     },
   },
-});
+};
 
-export { handler as GET, handler as POST }; 
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
+export const auth = handler; 
