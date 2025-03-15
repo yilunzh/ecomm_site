@@ -109,7 +109,11 @@ export const config = {
   },
 } satisfies NextAuthConfig;
 
-const handler = NextAuth(config);
+export const auth = NextAuth(config);
 
-export const handlers = { GET: handler, POST: handler };
-export const { auth, signIn, signOut } = handler; 
+// Export the handlers as Request -> Response functions
+export const GET = (auth as unknown) as (request: Request) => Promise<Response>;
+export const POST = (auth as unknown) as (request: Request) => Promise<Response>;
+
+// Export other auth utilities
+export const { signIn, signOut } = auth; 
