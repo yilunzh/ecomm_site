@@ -167,24 +167,27 @@ export async function POST(request: NextRequest) {
     const shippingAddressRecord = await prisma.address.create({
       data: {
         userId: session.user.id,
-        name: shippingAddress.name,
-        addressLine1: shippingAddress.addressLine1,
-        addressLine2: shippingAddress.addressLine2 || "",
+        line1: shippingAddress.addressLine1,
+        line2: shippingAddress.addressLine2 || "",
         city: shippingAddress.city,
         state: shippingAddress.state,
         postalCode: shippingAddress.postalCode,
         country: shippingAddress.country,
-        phone: shippingAddress.phone || "",
+        isDefault: false,
       },
     });
+
+    // Generate unique order number (current timestamp + random string)
+    const orderNumber = `ORD${Date.now()}${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
     // Create order
     const order = await prisma.order.create({
       data: {
+        orderNumber,
         userId: session.user.id,
         status: "PENDING",
         total: orderTotal,
-        paymentIntentId: paymentIntentId || null,
+        subtotal: orderTotal,
         shippingAddressId: shippingAddressRecord.id,
         orderItems: {
           create: orderItems,
@@ -206,6 +209,19 @@ export async function POST(request: NextRequest) {
         shippingAddress: true,
       },
     });
+
+    // Create payment record if paymentIntentId exists
+    if (paymentIntentId) {
+      await prisma.payment.create({
+        data: {
+          orderId: order.id,
+          amount: orderTotal,
+          provider: "stripe",
+          status: "PENDING",
+          paymentIntentId: paymentIntentId,
+        },
+      });
+    }
 
     return NextResponse.json(order);
   } catch (error) {
