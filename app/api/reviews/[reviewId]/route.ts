@@ -98,7 +98,6 @@ export async function PUT(
       data: {
         rating: body.rating !== undefined ? body.rating : review.rating,
         comment: body.comment !== undefined ? body.comment : review.comment,
-        title: body.title !== undefined ? body.title : review.title,
       },
       include: {
         user: {
@@ -108,26 +107,13 @@ export async function PUT(
             image: true,
           },
         },
-      },
-    });
-
-    // Update product average rating
-    const productReviews = await prisma.review.findMany({
-      where: {
-        productId: review.productId,
-      },
-      select: {
-        rating: true,
-      },
-    });
-
-    const totalRating = productReviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0);
-    const averageRating = productReviews.length > 0 ? totalRating / productReviews.length : 0;
-
-    await prisma.product.update({
-      where: { id: review.productId },
-      data: {
-        rating: averageRating,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            images: true,
+          },
+        },
       },
     });
 
@@ -179,26 +165,6 @@ export async function DELETE(
     // Delete the review
     await prisma.review.delete({
       where: { id: params.reviewId },
-    });
-
-    // Update product average rating
-    const productReviews = await prisma.review.findMany({
-      where: {
-        productId: review.productId,
-      },
-      select: {
-        rating: true,
-      },
-    });
-
-    const totalRating = productReviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0);
-    const averageRating = productReviews.length > 0 ? totalRating / productReviews.length : 0;
-
-    await prisma.product.update({
-      where: { id: review.productId },
-      data: {
-        rating: averageRating,
-      },
     });
 
     return NextResponse.json(
