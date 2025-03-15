@@ -40,7 +40,6 @@ export async function GET(
                 price: true,
               },
             },
-            variant: true,
           },
         },
         shippingAddress: true,

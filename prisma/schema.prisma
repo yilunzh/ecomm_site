@@ -120,6 +120,9 @@ model Order {
   subtotal        Float
   tax             Float?
   shipping        Float?
+  trackingNumber  String?
+  trackingCompany String?
+  notes           String?   @db.Text
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   
