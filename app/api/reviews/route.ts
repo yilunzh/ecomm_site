@@ -140,7 +140,6 @@ export async function POST(request: NextRequest) {
         productId: body.productId,
         rating: body.rating,
         comment: body.comment || "",
-        title: body.title || "",
       },
       include: {
         user: {
@@ -148,6 +147,13 @@ export async function POST(request: NextRequest) {
             id: true,
             name: true,
             image: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            images: true,
           },
         },
       },
@@ -170,10 +176,11 @@ export async function POST(request: NextRequest) {
       where: { id: body.productId },
       data: {
         rating: averageRating,
+        reviewCount: productReviews.length,
       },
     });
 
-    return NextResponse.json(review, { status: 201 });
+    return NextResponse.json(review);
   } catch (error) {
     console.error("Error creating review:", error);
     return NextResponse.json(
