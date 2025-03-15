@@ -1,34 +1,33 @@
 import NextAuth from "next-auth";
-import type { DefaultSession, NextAuthConfig } from "next-auth";
-import type { JWT } from "next-auth/jwt";
+import type { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import { compare } from "bcrypt";
-import { authConfig } from "../auth.config";
 
-// Extend the built-in session types
+const prisma = new PrismaClient();
+
 type UserRole = "ADMIN" | "CUSTOMER";
 
 declare module "next-auth" {
-  interface Session extends DefaultSession {
+  interface Session {
     user: {
       id: string;
       role: UserRole;
-    } & DefaultSession["user"]
+      email?: string | null;
+      name?: string | null;
+      image?: string | null;
+    }
   }
-
   interface User {
     role: UserRole;
   }
 }
 
-const prisma = new PrismaClient();
-
 const config = {
-  adapter: PrismaAdapter(prisma) as any, // Type assertion needed due to adapter version mismatch
+  adapter: PrismaAdapter(prisma) as any,
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
@@ -52,7 +51,7 @@ const config = {
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email as string,
+            email: credentials.email,
           },
         });
 
@@ -61,7 +60,7 @@ const config = {
         }
 
         const isPasswordValid = await compare(
-          credentials.password as string,
+          credentials.password,
           user.hashedPassword
         );
 
@@ -83,25 +82,25 @@ const config = {
     }),
     EmailProvider({
       server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
+        host: process.env.EMAIL_SERVER_HOST || "",
+        port: Number(process.env.EMAIL_SERVER_PORT) || 587,
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+          user: process.env.EMAIL_SERVER_USER || "",
+          pass: process.env.EMAIL_SERVER_PASSWORD || "",
         },
       },
-      from: process.env.EMAIL_FROM,
+      from: process.env.EMAIL_FROM || "",
     }),
   ],
   callbacks: {
-    async session({ session, token }: { session: DefaultSession; token: JWT }) {
+    async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.sub || "";
         session.user.role = (token.role as UserRole) || "CUSTOMER";
       }
       return session;
     },
-    async jwt({ token, user }: { token: JWT; user: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
       }
@@ -111,6 +110,4 @@ const config = {
 } satisfies NextAuthConfig;
 
 const handler = NextAuth(config);
-
-export { handler as GET, handler as POST };
-export const auth = handler; 
+export { handler as GET, handler as POST }; 
