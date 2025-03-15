@@ -8,7 +8,7 @@ import { compare } from "bcrypt";
 
 const prisma = new PrismaClient();
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
   pages: {
     signIn: "/auth/signin",
@@ -97,5 +97,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 });
 
-export const GET = handlers.GET;
-export const POST = handlers.POST; 
+export { handler as GET, handler as POST }; 
