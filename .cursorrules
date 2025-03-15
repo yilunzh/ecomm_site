@@ -1,0 +1,176 @@
+# Cursor Rules
+
+## Instructions
+
+- Record fixes for mistakes or corrections to avoid repetition in the `Lessons` section.
+- Organize thoughts and plan steps before starting a task in the `Scratchpad` section.
+- Clear old tasks if necessary.
+- Use todo markers for progress tracking:
+  - `[X]` Completed tasks
+  - `[ ]` Pending tasks
+- Update Scratchpad after completing subtasks.
+- Reflect and plan after milestones for better task management.
+- Always refer to Scratchpad before planning the next step.
+
+## Lessons
+
+## Scratchpad
+
+## E-commerce Website Development Plan
+
+### Phase 1: Project Setup and Configuration
+- [X] Initialize Next.js 15 project with TypeScript
+  - [X] Create project: `npx create-next-app@latest ecomm_site --typescript`
+  - [X] Configure project structure (app router)
+  - [X] Set up ESLint and Prettier
+- [X] Configure development environment
+  - [X] Set up environment variables (.env)
+  - [X] Configure PostgreSQL database
+  - [X] Set up Prisma ORM
+    - [X] Install Prisma: `npm install prisma @prisma/client`
+    - [X] Initialize Prisma: `npx prisma init`
+    - [X] Set up database schema with models
+- [ ] Set up authentication with NextAuth.js (beta)
+  - [ ] Configure auth providers (Google, Email, etc.)
+  - [ ] Create auth API routes
+  - [ ] Set up session management
+- [X] Install and configure UI libraries
+  - [X] Set up Shadcn UI components
+  - [X] Install Lucide icons
+  - [ ] Create theme configuration
+- [X] Set up state management with Zustand
+  - [X] Install Zustand
+  - [X] Create store configuration
+  - [X] Set up global state patterns
+
+### Phase 2: Database Schema and API Development
+- [X] Design and implement database schema with Prisma
+  - [X] User model (customers, admins)
+  - [X] Product model (with categories, variants)
+  - [X] Order model
+  - [X] Cart model
+  - [X] Review model
+  - [X] Admin/settings model
+- [ ] Implement API routes
+  - [X] Products API (CRUD operations)
+  - [X] Users API
+  - [ ] Orders API
+  - [X] Categories API
+  - [ ] Reviews API
+  - [ ] Search API
+- [ ] Set up Zod schemas for data validation
+  - [ ] Product validation schema
+  - [ ] User validation schema
+  - [ ] Order validation schema
+- [ ] Implement file uploading with Uploadthing
+  - [ ] Product image uploads
+  - [ ] User avatar uploads
+  - [ ] Configure storage and retrieval
+
+### Phase 3: User-facing Features and Pages
+- [ ] Implement main website layout
+  - [ ] Header with navigation
+  - [ ] Footer
+  - [ ] Responsive design
+- [ ] Create homepage
+  - [ ] Featured products section
+  - [ ] Categories navigation
+  - [ ] Promotions/banner section
+- [ ] Implement product browsing
+  - [ ] Product listing page with filters
+  - [ ] Categories view
+  - [ ] Search functionality
+- [ ] Create product detail page
+  - [ ] Product images gallery
+  - [ ] Product information
+  - [ ] Add to cart functionality
+  - [ ] Reviews section
+- [ ] Implement user account features
+  - [ ] Sign up/sign in pages
+  - [ ] User profile management
+  - [ ] Order history
+  - [ ] Wishlist
+- [ ] Create shopping cart functionality
+  - [ ] Cart page
+  - [ ] Cart state management with Zustand
+  - [ ] Update quantities
+- [ ] Implement checkout process
+  - [ ] Shipping information
+  - [ ] Payment integration with Stripe
+    - [ ] Set up Stripe API
+    - [ ] Implement payment form
+    - [ ] Handle payment confirmation
+  - [ ] Order confirmation
+- [ ] Implement email notifications with Resend
+  - [ ] Order confirmation emails
+  - [ ] Account verification
+  - [ ] Password reset
+
+### Phase 4: Admin Dashboard
+- [ ] Implement admin authentication and authorization
+  - [ ] Admin login page
+  - [ ] Role-based access control
+- [ ] Create admin dashboard layout
+  - [ ] Sidebar navigation
+  - [ ] Admin header
+- [ ] Implement dashboard overview page
+  - [ ] Key metrics display
+  - [ ] Charts with Recharts (sales, users, etc.)
+  - [ ] Recent orders/activities
+- [ ] Create product management
+  - [ ] Product listing with search/filter
+  - [ ] Add/edit product forms
+  - [ ] Product categories management
+  - [ ] Inventory management
+- [ ] Implement order management
+  - [ ] Orders listing page
+  - [ ] Order details view
+  - [ ] Order status updates
+  - [ ] Order fulfillment process
+- [ ] User management interface
+  - [ ] Customers listing
+  - [ ] Customer details/edit
+  - [ ] Admin users management
+- [ ] Settings and configuration
+  - [ ] Store settings
+  - [ ] Payment settings
+  - [ ] Shipping methods
+  - [ ] Tax configuration
+
+### Phase 5: Testing, Optimization and Deployment
+- [ ] Write tests
+  - [ ] Unit tests for utilities and components
+  - [ ] Integration tests for API routes
+  - [ ] End-to-end tests for critical flows
+- [ ] Performance optimization
+  - [ ] Image optimization
+  - [ ] API response caching
+  - [ ] Code splitting and lazy loading
+  - [ ] Database query optimization
+- [ ] SEO optimization
+  - [ ] Metadata management
+  - [ ] Sitemap generation
+  - [ ] Structured data implementation
+- [ ] Accessibility review and improvements
+- [ ] Security audit
+  - [ ] API security checks
+  - [ ] Authentication review
+  - [ ] Data validation
+- [ ] Deployment preparation
+  - [ ] Environment configuration
+  - [ ] Build process optimization
+  - [ ] Deployment pipeline setup
+
+### Phase 6: Launch and Monitoring
+- [ ] Final testing in production-like environment
+- [ ] Deployment to production
+- [ ] Set up monitoring and logging
+  - [ ] Error tracking
+  - [ ] Performance monitoring
+  - [ ] Usage analytics
+- [ ] Create backup and recovery strategy
+- [ ] Documentation
+  - [ ] User documentation
+  - [ ] Admin documentation
+  - [ ] API documentation
+  - [ ] Codebase documentation
