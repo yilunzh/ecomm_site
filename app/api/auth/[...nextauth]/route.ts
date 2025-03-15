@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import EmailProvider from "next-auth/providers/email";
 import { compare } from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -12,6 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/auth/signin",
     signOut: "/auth/signout",
     error: "/auth/error",
+    verifyRequest: "/auth/verify-request",
   },
   session: {
     strategy: "jwt",
@@ -55,7 +58,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       },
     }),
-    // Add more providers here as needed (Google, GitHub, etc.)
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: process.env.EMAIL_SERVER_PORT,
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+      },
+      from: process.env.EMAIL_FROM,
+    }),
   ],
   callbacks: {
     async session({ session, token }) {
@@ -65,10 +82,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.role = user.role;
       }
+      
+      // If it's a Google sign-in and a new user
+      if (account && account.provider === "google" && user) {
+        // We could do additional setup here if needed
+      }
+      
       return token;
     },
   },

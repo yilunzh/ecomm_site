@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Create a map of product IDs to products for easy lookup
-    const productMap = products.reduce((map, product) => {
+    const productMap = products.reduce((map: Record<string, any>, product: any) => {
       map[product.id] = product;
       return map;
     }, {});
