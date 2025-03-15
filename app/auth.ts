@@ -44,14 +44,14 @@ export const config = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
+      async authorize(credentials: Partial<Record<"email" | "password", unknown>>) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email,
+            email: credentials.email as string,
           },
         });
 
@@ -60,7 +60,7 @@ export const config = {
         }
 
         const isPasswordValid = await compare(
-          credentials.password,
+          credentials.password as string,
           user.hashedPassword
         );
 
@@ -109,4 +109,7 @@ export const config = {
   },
 } satisfies NextAuthConfig;
 
-export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth(config); 
+const handler = NextAuth(config);
+
+export const handlers = { GET: handler, POST: handler };
+export const { auth, signIn, signOut } = handler; 
