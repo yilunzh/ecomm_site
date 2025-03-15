@@ -1,4 +1,3 @@
-import NextAuth from "next-auth";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -7,7 +6,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import { compare } from "bcrypt";
-import { authConfig } from "../auth.config";
 
 // Extend the built-in session types
 type UserRole = "ADMIN" | "CUSTOMER";
@@ -27,8 +25,8 @@ declare module "next-auth" {
 
 const prisma = new PrismaClient();
 
-const config = {
-  adapter: PrismaAdapter(prisma) as any, // Type assertion needed due to adapter version mismatch
+export const authConfig = {
+  adapter: PrismaAdapter(prisma) as any,
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
@@ -108,9 +106,4 @@ const config = {
       return token;
     },
   },
-} satisfies NextAuthConfig;
-
-const handler = NextAuth(config);
-
-export { handler as GET, handler as POST };
-export const auth = handler; 
+} satisfies NextAuthConfig; 
