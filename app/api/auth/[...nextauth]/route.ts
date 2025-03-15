@@ -26,7 +26,7 @@ declare module "next-auth" {
 
 const prisma = new PrismaClient();
 
-export const authOptions: NextAuthConfig = {
+const config = {
   adapter: PrismaAdapter(prisma) as any, // Type assertion needed due to adapter version mismatch
   pages: {
     signIn: "/auth/signin",
@@ -107,9 +107,8 @@ export const authOptions: NextAuthConfig = {
       return token;
     },
   },
-};
+} satisfies NextAuthConfig;
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth(config);
 
-export { handler as GET, handler as POST };
-export const auth = handler; 
+export { handler as GET, handler as POST }; 
