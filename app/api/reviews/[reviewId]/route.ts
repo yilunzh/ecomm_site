@@ -117,6 +117,27 @@ export async function PUT(
       },
     });
 
+    // Update product average rating
+    const productReviews = await prisma.review.findMany({
+      where: {
+        productId: review.productId,
+      },
+      select: {
+        rating: true,
+      },
+    });
+
+    const totalRating = productReviews.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0);
+    const averageRating = productReviews.length > 0 ? totalRating / productReviews.length : 0;
+
+    await prisma.product.update({
+      where: { id: review.productId },
+      data: {
+        rating: averageRating,
+        reviewCount: productReviews.length,
+      },
+    });
+
     return NextResponse.json(updatedReview);
   } catch (error) {
     console.error("Error updating review:", error);
